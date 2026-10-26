@@ -1,30 +1,4 @@
-"""NOAA Storm Events -- one national table, built once, every hazard class.
-
-WHAT CHANGED
-    The previous `events_for_track` opened and parsed a whole year's details
-    CSV for every storm.  At ~500 storms spanning one or two years each, that
-    is ~800 parses of files averaging several hundred thousand rows, and it was
-    the dominant cost of an otherwise instant stage.  Here the yearly CSVs are
-    parsed ONCE into a filtered national parquet, and each storm slices it.
-
-    Adding a hazard class is then free at the network level: the yearly
-    gzipped CSVs are cached whole and unfiltered, so Flash Flood, Flood, Heavy
-    Rain, Hail and Lightning require no new downloads -- only a wider type
-    filter and one rebuild of the national table.  That was the main finding of
-    the scoping work and it is why the type list comes from
-    `tcmc.hazards.registry` rather than a module constant.
-
-COVERAGE
-    Tornado from 1950, thunderstorm wind and hail from 1955, everything else
-    from 1996.  A zero count for `flood` in a 1985 storm is not zero, it is
-    unobservable, and the attribution table records `coverage=False` for those
-    rows.  The registry owns those start years; nothing here hardcodes them.
-
-SOURCE
-    The AWS Open Data mirror (NODD) is tried first and the NCEI HTTPS
-    autoindex is the fallback, because scraping the directory listing is
-    fragile.  Both the file index and every yearly archive are cached on disk,
-    so a rebuild after adding a hazard class never re-hits the network.
+"""NOAA Storm Events query
 """
 from __future__ import annotations
 
