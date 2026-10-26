@@ -1,21 +1,10 @@
-"""IBTrACS ingestion -- a drop-in alternative to `hurdat`, same tidy schema.
+"""IBTrACS ingestion.
 
 Default source is the North Atlantic basin CSV of IBTrACS v04r01 (Knapp et al.,
 2010).  The full storm lifecycle is kept (no NATURE filter), matching the
 HURDAT2 population.  Positions use LAT/LON (-180..180, deg N/E); winds and
 pressures prefer the USA agency columns and fall back to WMO.
 
-THE NA TRAP
-    `keep_default_na=False` is not optional.  The basin code for the North
-    Atlantic is the string "NA", and pandas' default missing-value tokens
-    include "NA", so the basin filter silently matches nothing and the parser
-    returns an empty frame.  Explicit `na_values` are supplied instead.
-
-SIZE COLUMNS
-    `load_size` pulls USA_RMW and the R34 quadrant radii, which the parametric
-    baseline needs for rmax.  They are read from the same CSV rather than a
-    second download, but kept out of `parse` so the corridor pipeline does not
-    carry columns it never uses.
 """
 from __future__ import annotations
 
