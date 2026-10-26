@@ -1,25 +1,5 @@
-"""NFIP claims -- loading, and the space-time prefilter that scopes a storm.
+"""NFIP claims loading for processing
 
-THE PREFILTER IS LOOSE ON PURPOSE
-    2000 km and +/-72 h.  That is not an attribution radius; it is the envelope
-    of claims a storm could conceivably be associated with, and the corridor
-    decides which of them actually are.  A tight prefilter would make the
-    corridor's answer a function of the prefilter, which is the failure it
-    exists to avoid.
-
-    The 72 h matches `time.tail_days = 3` exactly, and it must: if the claim
-    window outran the corridor's frame axis, the extra claims could only ever
-    be recorded as `out_of_window`, inflating the denominator without ever
-    being classifiable.  `tcmc.hazards.registry` gives the NFIP class
-    `tail_days = 3` for that reason and `Config.validate` checks the pair.
-
-dateOfLoss IS DATE-ONLY AND MISREPORTED
-    which is why the matching tolerance is +/-24 h and is labelled MEASUREMENT
-    ERROR rather than physical lag.  A tornado report carries minute-resolution
-    `begin_time` and gets +/-3 h, half the frame spacing, which is a field
-    resolution allowance.  The two numbers look similar and mean different
-    things; the registry keeps them apart.  Sweep the claim tolerance over
-    {12h, 24h, 48h}.
 """
 from __future__ import annotations
 
