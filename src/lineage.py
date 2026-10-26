@@ -1,18 +1,13 @@
-"""Stage 2b -- ownership.  Which lineage owns which object, forward in time.
+"""Stage 2b -- directed graph ownership.  Which moisture lineage owns which object, forward in time.
 
-THE CONTRIBUTION -- the causal ordering
     Edges are FORWARD-DIRECTED.  Undirected connectivity is an equivalence
-    relation -- reflexive, symmetric, transitive -- and symmetry is the bug: a
-    breadth-first search walks BACKWARD through a merged component and admits a
-    frontal system's entire pre-merger history into the TC corridor, together
-    with every claim and tornado it caused.  That is what 3-D space-time
+    relation reflexive, symmetric, transitive.  That is what 3-D space-time
     connected components do.  Defensible for climatology, where a merged object
     IS the object of interest.  Not defensible for per-event attribution.
 
     `mode="undirected"` restores the old behaviour so the fix is a measured
     delta rather than an assertion.
 
-FOUR VARIANTS, ONE SWEEP
     The sweep is parameterised by what it labels and how it decides.
 
         variant     mode           granularity   decision at a merge
@@ -40,7 +35,6 @@ FOUR VARIANTS, ONE SWEEP
     granularity, so a lone parcel is never split just because its anomaly field
     is bumpy.
 
-CONVENTION
     After tau_j the coupled system is the TC's (the COMPOUND convention) under
     `all`.  Reported as a convention, never assumed as a fact.  Under `stem` and
     `stem_ws` the convention is replaced by the dominance test, which is the
