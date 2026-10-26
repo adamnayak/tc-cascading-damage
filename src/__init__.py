@@ -4,7 +4,6 @@ Pipeline within the subpackage:
 
     thr        |IVT| -> anomaly -> mask -> connected components
     marker     track -> per-frame centres, marker disc, C_link diagnostic
-    segment    anomaly + mask -> watershed basins with PERSISTENT labels
     dominance  the four merge-arbitration measures
     lineage    forward-directed ownership; four variants, two granularities
     events     tau, junctions, pre-tau misattribution, the branch table
@@ -18,5 +17,5 @@ from tcmc.corridor import (  # noqa: F401
 )
 from tcmc.corridor.lineage import TC, VARIANT_SPEC  # noqa: F401
 
-__all__ = ["thr", "marker", "segment", "dominance", "lineage", "events",
+__all__ = ["thr", "marker", "dominance", "lineage", "events",
            "arbitrate", "TC", "VARIANT_SPEC"]
