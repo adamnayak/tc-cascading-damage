@@ -1,10 +1,4 @@
 """Stage B -- track geometry and seeds.
-
-The track is a MARKER, not a spine.  A corridor cell is TC-owned because it
-contains a marker or because it continues something that did, never because it
-lies near the track line.  Frames after the last fix keep the last centre with
-`in_track=False`: that is the remnant, where the corridor must survive without a
-track and where most of the late attribution happens.
 """
 from __future__ import annotations
 
