@@ -1,41 +1,7 @@
-"""Stage A -- THR detection.  Adopted, not invented.
-
-Subtract from |IVT| its morphological reconstruction-by-dilation of a greyscale
-erosion.  The residual anomaly retains structures NARROWER than the structuring
-element E and absorbs those WIDER than it:
-
-    TC footprint       ~600 km   <  |E| ~1000 km   ->  retained
-    corridor filament  200-500 km                  ->  retained
-    tropical reservoir >3000 km                    ->  absorbed as background
-
-This is a CONNECTED OPERATOR: it acts on level-set components and never creates
-a contour absent from the field.  It is translation-invariant (no dependence on
-the analysis box, unlike per-frame Otsu) and magnitude-independent (transfers
-from a US West Coast winter to the September tropical Atlantic, unlike a fixed
-250 kg m-1 s-1).
-
+"""Stage A -- THR detection.
+Reference works:
     Vincent (1993), IEEE TIP 2(2):176-201  -- morphological reconstruction
     Xu, Ma, Chang & Wang (2020), GMD 13:4639-4662 (IPART), Sect. 2.1 / App. A1
-
-`anomaly` is bit-identical to `ipart.thr.THR` for s >= 6: IPART replaces its
-ellipsoid with a box for large kernels (`if kernel[1]>=6: ele=np.ones(...)`),
-which makes the erosion a separable minimum filter -- O(n) instead of O(n|E|).
-The reconstruction footprint is IPART's 6-connectivity cross, not skimage's 3x3
-default.
-
-NOT adopted from IPART: its geometric filtering exists to DELETE tropical
-cyclones (isoperimetric quotient Q>0.7 discards circular systems; a 23-80 deg
-latitude band; length >= 2000 km; L/W >= 2).  Its AR axis (a Dijkstra path from
-an inflow to an outflow boundary node) is undefined for a circular system.  Its
-Hausdorff tracking is unnecessary -- the best track gives us the track.  And its
-default simple-path scheme forbids merging, which is the event we exist to
-measure.
-
-THE ONE INPUT
-    Everything here is a function of |IVT| and the cell-area array.  That is why
-    the whole of stage 2 can be re-run from the stored `fields/{sid}.nc` with no
-    ERA5 access, and why a watershed or threshold sweep costs seconds per storm
-    rather than a cloud read.
 """
 from __future__ import annotations
 
