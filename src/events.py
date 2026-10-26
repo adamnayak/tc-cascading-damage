@@ -1,46 +1,4 @@
-"""What was measured: tau, junctions, pre-tau misattribution, and branches.
-
-TWO TABLES
-
-`merge_table`  one row per foreign LINEAGE that joins the TC lineage:
-        tau_j              when
-        junction lat/lon   where, and whether it is inside the plotted frame
-        area / lifetime before tau_j
-        hazards before tau_j   <- what an undirected corridor awards to the TC
-
-    That last quantity is the number the directed construction exists to
-    produce.  `pre_tau_counts` computes it against any hazard point table.
-
-`branch_table`  one row per tracked watershed basin, per variant:
-        branch_id, lineage, owner, generation, parent_branch, merged_into,
-        birth/death/tau frames, area and IWV statistics, centroid
-
-    This is the new table.  A branch is a persistent basin identity produced by
-    `tcmc.corridor.segment`; this module attaches ownership, lifetime and
-    generation to it so the precipitation aggregates have something to group on.
-
-TAU UNDER WATERSHEDDING -- a definition that had to change
-    With component-level ownership a foreign lineage joins the TC at a single
-    frame: the whole blob changes hands and tau is unambiguous.  With basin-level
-    ownership a front never wholly joins -- some of its basins do and some do
-    not, possibly at different frames.
-
-    tau_j is therefore defined as the FIRST frame at which ANY object of lineage
-    j is TC-owned, and `frames_before_tau` and `area_before_tau_km2` are
-    measured over lineage j as a whole.  Under component granularity this is
-    identical to the original definition, so the `stem` and `all` numbers are
-    unchanged; under `stem_ws` it is the weakest defensible reading, and
-    `n_basins_joined` alongside it says how much of the front actually changed
-    hands.  This must be restated in the methods; it is not a free refinement.
-
-GENERATION
-    Distance from the TC core in the branch graph: 0 for any branch that is ever
-    marker-seeded, and 1 + the minimum generation of its detected parents
-    otherwise.  Computed by a forward breadth-first pass over the branch graph,
-    so a branch can never inherit a generation from its own future -- the same
-    causal restriction that makes the lineage graph directed.  A branch that
-    never connects to the TC keeps generation -1, which is the honest value:
-    "not fed by the TC", distinct from "fed at distance 0".
+"""Events distinguished along moisture corridor
 """
 from __future__ import annotations
 
