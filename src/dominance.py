@@ -1,47 +1,5 @@
-"""Which parent wins a merge.  Four measures, one interface.
+"""Dominant corridor arbitration
 
-THE EDGE WEIGHT -- directed boundary flux, not overlap area
-    Overlap area says two systems touched; it cannot say moisture crossed.  Two
-    blobs can share a long boundary with the flow running ALONG it (adjacent, no
-    transfer) or ACROSS it (feeding).  `edge_fluxes` weights each parent->child
-    edge by the inward IVT flux along their shared boundary: for child C, the
-    inward flux is IVT . grad(I_C) on C's boundary cells (grad(I_C) points into
-    C, so a positive dot product is moisture entering), attributed to whichever
-    parent occupies the cell just outside.  A parent that is merely adjacent,
-    with flow parallel to the interface, contributes ~0.  This is the IPART
-    transboundary-flux construction (Xu et al. 2020, GMD 13:4639, App. A2), used
-    here to rank feeders.
-
-THE CONTENT MEASURE -- mass, not flux
-    `content` sums each pre-merger parent's integrated water vapour
-    (total_column_water_vapour x cell area, kg).  IVT is a flux in kg/m/s and is
-    NOT water; content integrates IWV in kg/m^2, a distinct field.  The child
-    goes to the lineage supplying at least `main_feeder_frac` of the COMBINED
-    content -- a mass statement, "who brought more water to the merger", which
-    is the better fit for attributing hazards to the parcels the TC contributes
-    most to.  `peak` and `mean` compare max and mean IWV instead: intensity, not
-    mass.
-
-    Non-flux modes have NO ambient term (dominance is among detected parents
-    only), no boundary gradients, and are computed ONLY at genuine merges.  A
-    sole parent continues for free.
-
-THE CAVEAT -- transport dominance, not a closed budget
-    Without precipitation and outflow the moisture budget does not close: a
-    parcel gains from convergence and loses to rainout between frames, so
-    edge-flux-in != edge-flux-out.  The ratio is an INSTANTANEOUS TRANSPORT
-    SHARE (which source dominates this interface now), NOT a conserved
-    contribution.  Read the pruned graph as "where the TC is the dominant
-    transport source", never as "the TC supplied X% of this parcel's water".
-    Reported as a convention, never asserted as a fact.
-
-WHAT CHANGED
-    Nothing in the mathematics.  The functions previously lived in
-    `corridor_flow.build_lineages_flow` as two inlined branches of one loop,
-    which made them impossible to test separately and impossible to apply at
-    basin level without duplicating the loop.  Here they are two functions with
-    one signature, called by the sweep in `tcmc.corridor.lineage` at whichever
-    granularity that sweep is running.
 """
 from __future__ import annotations
 
@@ -54,7 +12,7 @@ from tcmc.corridor.thr import ST, disk
 
 MEASURES = ("content", "peak", "mean", "flux")
 
-#: The one knob.  A child's dominant parent must supply at least this share of
+#: A child's dominant parent must supply at least this share of
 #: the inflow to keep the edge on the main stem.  0.5 is a strict majority;
 #: lower it toward plurality to keep co-fed branches.  Sweep it, like `thr.s`.
 MAIN_FEEDER_FRAC = 0.5
@@ -65,7 +23,6 @@ def edge_fluxes(Lp: np.ndarray, Lc: np.ndarray, U: np.ndarray,
                 V: np.ndarray) -> dict[tuple[int, int], float]:
     """{(parent, child): inward IVT flux from parent into child}; parent 0 = ambient.
 
-    Only the positive part is kept: we are measuring feeding, not draining.
     Ambient (label 0 just outside the child) is reported so the diagnostic
     `ambient_share_tc` can say how environmentally fed the main stem is, but it
     can never own a parcel.
@@ -130,7 +87,7 @@ def resolve_owner(contributions: dict[int, float], frac: float,
     Returns (winner or None, winner's share, denominator).  `include_ambient`
     puts the environmental inflow in the denominator, which only the flux
     measure has; for the mass measures the denominator is the detected parents
-    alone, because "who brought more water" is a comparison between systems.
+    alone
 
     A single contributor always wins regardless of `frac`: one parent is a
     CONTINUATION, not a merge, and a lone remnant coasting on ambient inflow
